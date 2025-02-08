@@ -1,0 +1,17 @@
+{
+  "name": "@nick/brotli",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Nicholas Berlette",
+    "email": "nick@berlette.com",
+    "url": "https://berlette.com"
+  },
+  "exports": "./mod.ts",
+  "publish": {
+    "include": [
+      "mod.ts",
+      "lib/**/*.{js,ts,wasm}"
+    ]
+  }
+}
