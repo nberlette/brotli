@@ -7,7 +7,7 @@
 ###### Compatible with Deno, Bun, Node.js, Cloudflare Workers, and modern browsers.
 
 [![jsr-score][badge-jsr-score]][badge-jsr-score]
-[![jsr-pkg][badge-jsr-pkg]][badge-jsr-pkg] [![npm][badge-npm]][NPM]
+[![jsr-pkg][badge-jsr-pkg]][badge-jsr-pkg]
 
 </div>
 
