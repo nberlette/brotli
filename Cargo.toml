@@ -1,24 +1,19 @@
 [package]
-  name        = "brocha-wasm"
+  name        = "brotli-rs"
   version     = "0.1.0"
   edition     = "2021"
   authors     = ["Nicholas Berlette <nick@berlette.com>"]
   license     = "MIT OR Apache-2.0"
-  keywords    = ["brotli", "decompressor", "webassembly", "wasm", "compression"]
-  description = "WebAssembly bindings for the brotli-decompressor crate. Part of the @nick/brocha project (distributed as brocha on NPM)."
+  description = "Lightweight brotli-decompressor WebAssembly bindings, plus a TypeScript wrapper API compatible with Deno, Node, Bun, and the browser."
   publish     = false
-  repository  = "https://github.com/nberlette/brocha"
+  repository  = "https://github.com/nberlette/brotli"
 
 [lib]
-  name       = "brocha"
+  name       = "brotli"
   crate-type = ["cdylib"]
 
-[features]
-  default = []
-  alloc   = ["wasm-bindgen/gg-alloc"]
-
 [dependencies]
-  wasm-bindgen        = { version = "=0.2.100", features = [] }
+  wasm-bindgen        = { version = "=0.2.100", features = ["gg-alloc"] }
   brotli-decompressor = { version = "=4.0.2" }
 
 [profile.dev]

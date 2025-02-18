@@ -1,46 +1,21 @@
-//! # brocha
-//!
-//! This crate provides a fast, lightweight implementation of Google's Brotli
-//! decompression algorithm in WebAssembly.
-//!
-//! Under the hood this is simply a wrapper of the `brotli-decompressor` crate,
-//! with WebAssembly bindings that make it suitable for use in Deno, Node, Bun,
-//! and other modern JS runtimes (including browsers and Cloudflare Workers).
-//!
-//! Currently `brocha` is not published to crates.io, as its primary purpose in
-//! life is to be a WebAssembly alternative to brocha's primary decompression
-//! implementation, which is written in pure TypeScript.
-//!
-//! Why include a WebAssembly implementation **and** a TypeScript one as well?
-//! Despite serving the same end goal, the two implementations are designed to
-//! serve different use cases. The TypeScript implementation is designed to be
-//! compatible with **any** ES2015+ environment right out of the box, with no
-//! dependencies and no instantiation or configuration required. Despite being
-//! written in TypeScript, the performance of the main `brocha` implementation
-//! is quite impressive in its own right, and is more than sufficient for the
-//! vast majority of use cases.
-//!
-//! Sometimes, however, you need to squeeze every last bit of performance out
-//! of the decompression process. This is where the WebAssembly implementation
-//! comes in, but it comes with a few caveats:
-//!
-//! 1. The runtime environment must support WebAssembly, obviously.
-//! 2. The WebAssembly module must be loaded and instantiated before use.
-//! 3. The WebAssembly build is about 30% larger than the TypeScript build.
-//!
-//! @see https://jsr.io/@nick/brocha/doc for the JSR documentation.
-//! @see https://npmjs.com/package/brocha for the brocha NPM distribution.
-//! @see https://github.com/nberlette/brocha#readme for the GitHub repository.
 #![allow(unexpected_cfgs)]
 
 use wasm_bindgen::prelude::*;
 
-/// Decompresses a
-#[wasm_bindgen(js_name = decompress)]
+/// Decompresses a Brotli-compressed buffer, returning the decompressed data.
+///
+/// If the data cannot be decompressed, a copy of the input is returned.
+///
+/// @param {Uint8Array} data - The Brotli-compressed data to decompress.
+/// @returns {Uint8Array} - The decompressed data.
+#[wasm_bindgen(js_name = decompress, skip_jsdoc)]
 pub fn decompress_js(data: Box<[u8]>) -> Box<[u8]> {
   decompress(data)
 }
 
+/// Decompresses a Brotli-compressed buffer, returning the decompressed data.
+///
+/// If the data cannot be decompressed, a copy of the input is returned.
 pub fn decompress(data: impl AsRef<[u8]>) -> Box<[u8]> {
   let mut output = Vec::new();
 
