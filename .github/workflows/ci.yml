@@ -1,0 +1,56 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish the module'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  check-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+    concurrency:
+      group: ci-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: denoland/setup-deno@main
+        with:
+          deno-version: canary
+
+      - id: check
+        name: check
+        run: |
+          deno lint
+          deno fmt --check
+          deno test -A --no-check=remote
+          deno doc --lint
+
+      - id: publish
+        if: |
+          steps.check.outputs.status == 'success' &&
+          (
+            github.event_name == 'workflow_dispatch' &&
+            github.event.inputs.publish == 'true'
+          ) || (
+            github.event_name == 'push' &&
+            startsWith(github.ref, 'refs/tags/')
+          )
+        name: publish
+        run: deno publish --dry-run && deno publish
