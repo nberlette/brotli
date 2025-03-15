@@ -27,6 +27,10 @@ jobs:
     concurrency:
       group: ci-${{ github.ref }}
       cancel-in-progress: true
+    outputs:
+      build-artifact-id: ${{ steps.artifact.outputs.artifact-id }}
+      build-artifact-url: ${{ steps.artifact.outputs.artifact-url }}
+      build-artifact-digest: ${{ steps.artifact.outputs.artifact-digest }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,22 +39,32 @@ jobs:
           deno-version: canary
 
       - id: check
-        name: check
         run: |
           deno lint
           deno fmt --check
           deno test -A --no-check=remote
           deno doc --lint
 
+      - id: build
+        run: deno task build
+
+      - id: artifact
+        if: steps.build.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: brotli-build-${{ github.sha }}
+          path: lib
+
       - id: publish
         if: |
-          steps.check.outputs.status == 'success' &&
-          (
-            github.event_name == 'workflow_dispatch' &&
-            github.event.inputs.publish == 'true'
-          ) || (
-            github.event_name == 'push' &&
-            startsWith(github.ref, 'refs/tags/')
+          steps.check.outcome == 'success' &&
+          steps.build.outcome == 'success' && (
+            (
+              github.event_name == 'workflow_dispatch' &&
+              github.event.inputs.publish == 'true'
+            ) || (
+              github.event_name == 'push' &&
+              startsWith(github.ref, 'refs/tags/')
+            )
           )
-        name: publish
         run: deno publish --dry-run && deno publish
