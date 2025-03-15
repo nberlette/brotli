@@ -4,14 +4,14 @@ on:
     branches:
       - main
     tags:
-      - '*'
+      - "*"
   pull_request:
     branches:
       - main
   workflow_dispatch:
     inputs:
       publish:
-        description: 'Publish the module'
+        description: "Publish the module"
         required: false
         default: true
         type: boolean
