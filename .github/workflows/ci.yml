@@ -46,7 +46,7 @@ jobs:
           deno lint
           deno fmt --check
           deno test -A --no-check=remote --permit-no-files
-          deno doc --lint
+          deno doc --lint mod.ts
 
       - id: build
         name: build wasm
