@@ -32,24 +32,29 @@ jobs:
       build-artifact-url: ${{ steps.artifact.outputs.artifact-url }}
       build-artifact-digest: ${{ steps.artifact.outputs.artifact-digest }}
     steps:
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@main
+      - name: setup deno
+        uses: denoland/setup-deno@main
         with:
           deno-version: canary
 
       - id: check
+        name: run checks
         run: |
           deno lint
           deno fmt --check
-          deno test -A --no-check=remote
+          deno test -A --no-check=remote --permit-no-files
           deno doc --lint
 
       - id: build
+        name: build wasm
         run: deno task build
 
       - id: artifact
         if: steps.build.outcome == 'success'
+        name: upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: brotli-build-${{ github.sha }}
@@ -67,4 +72,5 @@ jobs:
               startsWith(github.ref, 'refs/tags/')
             )
           )
-        run: deno publish --dry-run && deno publish
+        name: publish to jsr
+        run: deno publish --dry-run --allow-dirty && deno publish --allow-dirty
